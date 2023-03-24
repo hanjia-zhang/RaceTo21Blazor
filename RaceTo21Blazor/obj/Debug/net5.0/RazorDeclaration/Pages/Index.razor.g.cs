@@ -91,7 +91,7 @@ using RaceTo21Blazor.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 123 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
+#line 121 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
       
 
 

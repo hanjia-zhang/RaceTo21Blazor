@@ -40,54 +40,54 @@ else if (page == Page.UserInfo)
 
 else if (page == Page.MainGame)
 {
-    <table>
-        <thead>
-            <tr>
-                @for (int i = 0; i < playerNumber; i++)
-                {
-                    PrintPlayer(i);
-                    <th>@playerFullName</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                @for (int i = 0; i < playerNumber; i++)
-                {
-                    <td>@GetPlayerStatus(i)</td>
-                }
-            </tr>
-            <tr>
-                @for (int i = 0; i < playerNumber; i++)
-                {
-
-                    @if (CardsToDisplay(i) != null)
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    @for (int i = 0; i < playerNumber; i++)
                     {
-                        <td>
-                            @foreach (String card in CardsToDisplay(i))
-                            {
-                                <div>
-                                    <img src="card_assets/@card" />
-                                </div>
-                            }
-
-                        </td>
+                        PrintPlayer(i);
+                        <th>@playerFullName</th>
                     }
-                    else
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    @for (int i = 0; i < playerNumber; i++)
                     {
-                        <td>null</td>
+                        <td>@GetPlayerStatus(i)</td>
                     }
-                }
-            </tr>
+                </tr>
+                <tr>
+                    @for (int i = 0; i < playerNumber; i++)
+                    {
 
-        </tbody>
-    </table>
+                        @if (CardsToDisplay(i) != null)
+                        {
+                            <td>
+                                @foreach (String card in CardsToDisplay(i))
+                                {
+                                    <div>
+                                        <img src="card_assets/@card" />
+                                    </div>
+                                }
+
+                            </td>
+                        }
+                        else
+                        {
+                            <td>null</td>
+                        }
+                    }
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
 
     <div class="PlayerChoose">
-        <div class="col-sm-6" id="Describtion">
-            <div class="BUTTON" @onclick="() => StayClick(false)">
-                <button>STAY</button>
-            </div>
+        <div class="BUTTON" @onclick="() => StayClick(false)">
+            <button>STAY</button>
         </div>
         @if (notStay)
         {
@@ -107,8 +107,6 @@ else if (page == Page.MainGame)
         {
             Stay(CurrentPlayerIndex);
         }
-
-
     </div>
 
 

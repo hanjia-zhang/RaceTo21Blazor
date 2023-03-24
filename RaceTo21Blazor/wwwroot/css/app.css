@@ -59,8 +59,8 @@ h1 {
     font-weight: bold;
 }
 
-.introduction{
-    text-align:center;
+.introduction {
+    text-align: center;
 }
 
 h7 {
@@ -98,9 +98,9 @@ button {
     color: #4c4e57;
 }
 
-#PlayerInput{
-    margin-right:10%;
-    margin-left:10%;
+#PlayerInput {
+    margin-right: 10%;
+    margin-left: 10%;
 }
 
 #Describtion {
@@ -121,7 +121,7 @@ table {
     margin-left: 30%;
     margin-right: 30%;
     border: 1px solid #9a9a9a;
-    padding:10%;
+    padding: 10%;
 }
 
 th, td {
@@ -135,4 +135,24 @@ th {
 
 td {
     font-size: 30px;
+}
+
+.btn-group-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+    .btn-group-center .btn-group {
+        margin: 0 auto;
+    }
+
+.PlayerChoose {
+    text-align: center;
+}
+
+.table-container {
+    display: flex;
+    justify-content: center;
 }
