@@ -1,0 +1,209 @@
+﻿@page "/"
+
+
+@if (page == Page.Welcome)
+{
+    <h1>Welcome To Race-To-21</h1>
+
+
+    <div class="numberOfPlayer">
+        <div class="message">
+            <label for="number-input">How many players?</label>
+        </div>
+        <div class="input">
+            <input type="number" id="number-input" name="number-input" value="0" @onchange="NumberofPlayer" />
+        </div>
+        <div class="BUTTON" @onclick="() => PageChange(Page.UserInfo)">
+            <button>NEXT</button>
+        </div>
+    </div>
+}
+else if (page == Page.UserInfo)
+{
+    <h1>Please Enter Name</h1>
+
+    @for (int i = 1; i <= playerNumber; i++)
+    {
+        <div class="row mt-2" id="PlayerInput">
+            <div class="col-sm-6" id="Describtion">
+                Player @i Name:
+            </div>
+            <div class="col-sm-6" id="Input">
+                <input type="text" placeholder="Name" @onchange="NewPlayer" />
+            </div>
+        </div>
+    }
+    <div class="BUTTON" @onclick="() => PageChange(Page.MainGame)">
+        <button>NEXT</button>
+    </div>
+}
+
+else if (page == Page.MainGame)
+{
+    <table>
+        <thead>
+            <tr>
+                @for (int i = 0; i < playerNumber; i++)
+                {
+                    PrintPlayer(i);
+                    <th>@playerFullName</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @for (int i = 0; i < playerNumber; i++)
+                {
+                    <td>@GetPlayerStatus(i)</td>
+                }
+            </tr>
+            <tr>
+                @for (int i = 0; i < playerNumber; i++)
+                {
+
+                    @if (CardsToDisplay(i) != null)
+                    {
+                        <td>
+                            @foreach (String card in CardsToDisplay(i))
+                            {
+                                <div>
+                                    <img src="card_assets/@card" />
+                                </div>
+                            }
+
+                        </td>
+                    }
+                    else
+                    {
+                        <td>null</td>
+                    }
+                }
+            </tr>
+
+        </tbody>
+    </table>
+
+    <div class="PlayerChoose">
+        <div class="col-sm-6" id="Describtion">
+            <div class="BUTTON" @onclick="() => StayClick(false)">
+                <button>STAY</button>
+            </div>
+        </div>
+        @if (notStay)
+        {
+            <div class="col-sm-6 btn-group" role="group">
+                @for (int buttonNumber = 1; buttonNumber < 4; buttonNumber++)
+                {
+                    int btnNum = buttonNumber;
+                    <button type="button" class="btn btn-secondary"
+                            @onclick="() => ButtonClick(btnNum)">
+                        @buttonNumber
+                    </button>
+                }
+            </div>
+            PlayerTurn(CurrentPlayerIndex, chooseCards);
+        }
+        else
+        {
+            Stay(CurrentPlayerIndex);
+        }
+
+
+    </div>
+
+
+}
+
+else if (page == Page.EndScene)
+{
+
+}
+
+
+@code{
+
+
+    private enum Page
+    {
+        Welcome,
+        UserInfo,
+        MainGame,
+        EndScene
+    }
+
+    private Page page = Page.Welcome;
+    //public Game game = new Game(c);
+    private int playerNumber = 0;
+    public static CardTable cardTable = new CardTable();
+    public Game game = new Game(cardTable);
+    private string playerInfo = null;
+    private string playerFullName = null;
+    private int chooseCards = 0;
+    private bool notStay = true;
+    private int CurrentPlayerIndex = 0;
+
+    private void NumberofPlayer(ChangeEventArgs e)
+    {
+
+        playerNumber = int.Parse(e.Value.ToString());
+    }
+
+    private ValueTask PageChange(Page e)
+    {
+        page = e;
+        return ValueTask.CompletedTask;
+    }
+
+    private void NewPlayer(ChangeEventArgs e)
+    {
+        game.AddPlayer(e.Value.ToString());
+    }
+
+    private void PrintPlayer(int i)
+    {
+        string playerName = game.PrintPlayer(i);
+        playerInfo = "Hello, my name is " + playerName + " and I'm player#" + (i + 1).ToString() + ".";
+        playerFullName = playerName;
+    }
+
+    private void ButtonClick(int numberOfCard)
+    {
+        chooseCards = numberOfCard;
+    }
+    private void StayClick(bool stayNot)
+    {
+        notStay = stayNot;
+    }
+
+    private void PlayerTurn(int playerIndex, int cardNumber)
+    {
+        game.PlayTurn(playerIndex, cardNumber);
+    }
+
+    private void Stay(int playerIndex)
+    {
+        game.PlayerStay(playerIndex);
+    }
+
+    private List<string> CardsToDisplay(int playerIndex)
+    {
+        return game.ShowPlayerCards(playerIndex);
+    }
+
+    private string GetPlayerStatus(int playerIndex)
+    {
+        PlayerStatus status = game.GetPlayerStatus(playerIndex);
+        if (status == PlayerStatus.active)
+        {
+            return "Active";
+        }
+        else if (status == PlayerStatus.stay)
+        {
+            return "Stay";
+        }
+        else
+        {
+            return "Bust";
+        }
+    }
+}
