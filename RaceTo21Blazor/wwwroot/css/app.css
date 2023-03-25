@@ -148,7 +148,7 @@ td {
         margin: 0 auto;
     }
 
-.PlayerChoose {
+.PlayerChoose, .playerTurn {
     text-align: center;
 }
 
@@ -156,3 +156,4 @@ td {
     display: flex;
     justify-content: center;
 }
+

@@ -91,7 +91,7 @@ using RaceTo21Blazor.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 121 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
+#line 125 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
       
 
 
@@ -111,8 +111,8 @@ using RaceTo21Blazor.Shared;
     private string playerInfo = null;
     private string playerFullName = null;
     private int chooseCards = 0;
-    private bool notStay = true;
     private int CurrentPlayerIndex = 0;
+    private bool firstClick = true;
 
     private void NumberofPlayer(ChangeEventArgs e)
     {
@@ -131,25 +131,36 @@ using RaceTo21Blazor.Shared;
         game.AddPlayer(e.Value.ToString());
     }
 
-    private void PrintPlayer(int i)
+    private string PrintPlayer(int i)
     {
         string playerName = game.PrintPlayer(i);
-        playerInfo = "Hello, my name is " + playerName + " and I'm player#" + (i + 1).ToString() + ".";
-        playerFullName = playerName;
+        playerInfo = playerName + ", your turn.";
+
+        return playerInfo;
+    }
+
+    private string PrintPlayerName(int i)
+    {
+        string playerName = game.PrintPlayer(i);
+        return playerName;
     }
 
     private void ButtonClick(int numberOfCard)
     {
         chooseCards = numberOfCard;
+        PlayerTurn(CurrentPlayerIndex, chooseCards);
+        NextPlayer();
     }
     private void StayClick(bool stayNot)
     {
-        notStay = stayNot;
+        Stay(CurrentPlayerIndex);
+        NextPlayer();
     }
 
     private void PlayerTurn(int playerIndex, int cardNumber)
     {
         game.PlayTurn(playerIndex, cardNumber);
+
     }
 
     private void Stay(int playerIndex)
@@ -177,6 +188,24 @@ using RaceTo21Blazor.Shared;
         {
             return "Bust";
         }
+    }
+
+    private void NextPlayer()
+    {
+        if (CurrentPlayerIndex < playerNumber - 1)
+        {
+            CurrentPlayerIndex++;
+        }
+
+        else
+        {
+            CurrentPlayerIndex = 0;
+        }
+    }
+
+    private string PlayerScore(int i)
+    {
+        return game.ShowPlayerScore(i)+ "/21";
     }
 
 #line default
