@@ -91,7 +91,7 @@ using RaceTo21Blazor.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 125 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
+#line 132 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
       
 
 
@@ -113,6 +113,8 @@ using RaceTo21Blazor.Shared;
     private int chooseCards = 0;
     private int CurrentPlayerIndex = 0;
     private bool firstClick = true;
+    private bool RoundEnd = false;
+    private string winner = null;
 
     private void NumberofPlayer(ChangeEventArgs e)
     {
@@ -149,12 +151,29 @@ using RaceTo21Blazor.Shared;
     {
         chooseCards = numberOfCard;
         PlayerTurn(CurrentPlayerIndex, chooseCards);
-        NextPlayer();
+        winner = CheckForEnd();
+        if (winner == null)
+        {
+            NextPlayer();
+        }
+        else
+        {
+            RoundEnd = true;
+        }
+
     }
     private void StayClick(bool stayNot)
     {
         Stay(CurrentPlayerIndex);
-        NextPlayer();
+        winner = CheckForEnd();
+        if (winner == null)
+        {
+            NextPlayer();
+        }
+        else
+        {
+            RoundEnd = true;
+        }
     }
 
     private void PlayerTurn(int playerIndex, int cardNumber)
@@ -184,9 +203,13 @@ using RaceTo21Blazor.Shared;
         {
             return "Stay";
         }
-        else
+        else if(status == PlayerStatus.bust)
         {
             return "Bust";
+        }
+        else
+        {
+            return "Win";
         }
     }
 
@@ -205,7 +228,12 @@ using RaceTo21Blazor.Shared;
 
     private string PlayerScore(int i)
     {
-        return game.ShowPlayerScore(i)+ "/21";
+        return game.ShowPlayerScore(i) + "/21";
+    }
+
+    private string CheckForEnd()
+    {
+        return game.checkForEnd();
     }
 
 #line default

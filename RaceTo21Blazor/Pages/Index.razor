@@ -40,26 +40,33 @@ else if (page == Page.UserInfo)
 
 else if (page == Page.MainGame)
 {
-    <div class="PlayerChoose">
-        <div class="playerTurn">
-            @PrintPlayer(CurrentPlayerIndex)
-        </div>
-        <div class="BUTTON" @onclick="() => StayClick(false)">
-            <button>STAY</button>
-        </div>
+    @if (!RoundEnd)
+    {
+        <div class="PlayerChoose">
+            <div class="playerTurn">
+                @PrintPlayer(CurrentPlayerIndex)
+            </div>
+            <div class="BUTTON" @onclick="() => StayClick(false)">
+                <button>STAY</button>
+            </div>
 
-        <div class="col-sm-6 btn-group" role="group">
-            @for (int buttonNumber = 1; buttonNumber < 4; buttonNumber++)
-            {
-                int btnNum = buttonNumber;
-                <button type="button" class="btn btn-secondary"
-                        @onclick="() => ButtonClick(btnNum)">
-                    @buttonNumber
-                </button>
-            }
-        </div>
+            <div class="col-sm-6 btn-group" role="group">
+                @for (int buttonNumber = 1; buttonNumber < 4; buttonNumber++)
+                {
+                    int btnNum = buttonNumber;
+                    <button type="button" class="btn btn-secondary"
+                            @onclick="() => ButtonClick(btnNum)">
+                        @buttonNumber
+                    </button>
+                }
+            </div>
 
-    </div>
+        </div>
+    }
+    else
+    {
+        <div>@winner wins! </div>
+    }
     <div class="table-container">
         <table>
             <thead>
@@ -143,6 +150,8 @@ else if (page == Page.EndScene)
     private int chooseCards = 0;
     private int CurrentPlayerIndex = 0;
     private bool firstClick = true;
+    private bool RoundEnd = false;
+    private string winner = null;
 
     private void NumberofPlayer(ChangeEventArgs e)
     {
@@ -179,12 +188,29 @@ else if (page == Page.EndScene)
     {
         chooseCards = numberOfCard;
         PlayerTurn(CurrentPlayerIndex, chooseCards);
-        NextPlayer();
+        winner = CheckForEnd();
+        if (winner == null)
+        {
+            NextPlayer();
+        }
+        else
+        {
+            RoundEnd = true;
+        }
+
     }
     private void StayClick(bool stayNot)
     {
         Stay(CurrentPlayerIndex);
-        NextPlayer();
+        winner = CheckForEnd();
+        if (winner == null)
+        {
+            NextPlayer();
+        }
+        else
+        {
+            RoundEnd = true;
+        }
     }
 
     private void PlayerTurn(int playerIndex, int cardNumber)
@@ -214,9 +240,13 @@ else if (page == Page.EndScene)
         {
             return "Stay";
         }
-        else
+        else if(status == PlayerStatus.bust)
         {
             return "Bust";
+        }
+        else
+        {
+            return "Win";
         }
     }
 
@@ -235,6 +265,11 @@ else if (page == Page.EndScene)
 
     private string PlayerScore(int i)
     {
-        return game.ShowPlayerScore(i)+ "/21";
+        return game.ShowPlayerScore(i) + "/21";
+    }
+
+    private string CheckForEnd()
+    {
+        return game.checkForEnd();
     }
 }
