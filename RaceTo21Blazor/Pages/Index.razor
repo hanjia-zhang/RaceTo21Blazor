@@ -65,7 +65,11 @@ else if (page == Page.MainGame)
     }
     else
     {
-        <div>@winner wins! </div>
+        <div class="winner">@winner wins! </div>
+        <div class="BUTTON" @onclick="() => ToContinuePage()">
+            <button>NEXT</button>
+        </div>
+
     }
     <div class="table-container">
         <table>
@@ -122,10 +126,28 @@ else if (page == Page.MainGame)
 
 
 }
+else if (page == Page.ContinueCheck)
+{
+    @for (int i = 0; i < playerNumber; i++)
+    {
+        int index = i;
+        <div class="askingbar">
+            <div class="endask">Do you want to play again Y/N, @PrintPlayerName(i)</div>
+            <div class="endOptions">
+                <button class="BUTTON" @onclick="() => ContinueCheck(index, true)">Yes</button>
+                <button class="BUTTON" @onclick="() => ContinueCheck(index, false)">No</button>
+            </div>
+        </div>
+
+    }
+    <div class="BUTTON" @onclick="() => EndCheck()">
+        <button>NEXT</button>
+    </div>
+}
 
 else if (page == Page.EndScene)
 {
-
+    <div class="endgame">Game end</div>
 }
 
 
@@ -137,6 +159,7 @@ else if (page == Page.EndScene)
         Welcome,
         UserInfo,
         MainGame,
+        ContinueCheck,
         EndScene
     }
 
@@ -152,6 +175,7 @@ else if (page == Page.EndScene)
     private bool firstClick = true;
     private bool RoundEnd = false;
     private string winner = null;
+    private List<bool> playerContinueCheck = new List<bool>();
 
     private void NumberofPlayer(ChangeEventArgs e)
     {
@@ -240,7 +264,7 @@ else if (page == Page.EndScene)
         {
             return "Stay";
         }
-        else if(status == PlayerStatus.bust)
+        else if (status == PlayerStatus.bust)
         {
             return "Bust";
         }
@@ -271,5 +295,48 @@ else if (page == Page.EndScene)
     private string CheckForEnd()
     {
         return game.checkForEnd();
+    }
+
+    private void ToContinuePage()
+    {
+        page = Page.ContinueCheck;
+        for (int i = 0; i < playerNumber; i++)
+        {
+            playerContinueCheck.Add(true);
+        }
+    }
+
+    private void ContinueCheck(int playerIndex, bool c)
+    {
+        playerContinueCheck[playerIndex] = c;
+    }
+
+    private void EndCheck()
+    {
+        int notContinueNumber = 0;
+        for (int i = 0; i < playerNumber; i++)
+        {
+            game.PlayerContinue(i, playerContinueCheck[i]);
+            if (playerContinueCheck[i] == false)
+            {
+                notContinueNumber++;
+            }
+        }
+        bool check = game.CheckGameContinue();
+        if (check)
+        {
+            chooseCards = 0;
+            CurrentPlayerIndex = 0;
+            firstClick = true;
+            RoundEnd = false;
+            winner = null;
+            playerContinueCheck = new List<bool>();
+            playerNumber -= notContinueNumber;
+            page = Page.MainGame;
+        }
+        else
+        {
+            page = Page.EndScene;
+        }
     }
 }

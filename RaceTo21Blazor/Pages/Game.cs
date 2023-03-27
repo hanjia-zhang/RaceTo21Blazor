@@ -12,6 +12,7 @@ namespace RaceTo21Blazor.Pages
         int currentPlayer = 0; // current player on list
         public Task nextTask; // keeps track of game state
         private bool cheating = false; // lets you cheat for testing purposes if true
+        List<int> playerNotContinue = new List<int>();
 
 
         public Game(CardTable c)
@@ -28,6 +29,7 @@ namespace RaceTo21Blazor.Pages
         public void AddPlayer(string n)
         {
             players.Add(new Player(n));
+            numberOfPlayers++;
         }
 
         public string PrintPlayer(int i)
@@ -60,7 +62,6 @@ namespace RaceTo21Blazor.Pages
                     if (player.score > 21)
                     {
                         player.setStatus(PlayerStatus.bust);//hz
-                        numberOfPlayers--;// hz decrease the total number of current players
                     }
                     else if (player.score == 21)
                     {
@@ -138,93 +139,79 @@ namespace RaceTo21Blazor.Pages
             }
         }
 
-        public string RoundEnd()
+        public void PlayerContinue(int playerIndex, bool b)
         {
-            if (!CheckActivePlayers())
+            if(!b)
             {
-                Player winner = DoFinalScoring();
-                return winner.name;
-                //cardTable.AnnounceWinner(winner);
-
-                //int count = 0; //hz
-                //int totalScore = 0;//hz 
-                //for (int i = 0; i < players.Count; i++)// hz count the total score of the total number of players'
-                //{
-                //    totalScore += players[i].score;
-                //}
-
-                //if (totalScore == 0) // if total score equal 0, ask player again
-                //{
-                //    for (int i = 0; i < players.Count; i++)//hz ask one more time if everyone bust
-                //    {
-                //        //Console.WriteLine("Do you want to pick card last call Y/N " + players[i].name);
-                //        //string response = Console.ReadLine().ToUpper().Trim();
-                //        if (response == "Y")
-                //        {
-                //            players[i].setStatus(PlayerStatus.active);//hz call the function from the Player class
-                //            count++;
-                //        }
-                //    }
-                //}
-                //if (count == 0)//hz
-                //{
-                //    for (int i = 0; i < players.Count; i++) //hz set the winner to the last slot in next round
-                //    {
-                //        if (players[i] == winner)
-                //        {
-                //            Player tmp = players[players.Count - 1];
-                //            players[players.Count - 1] = players[i];
-                //            players[i] = tmp;
-                //        }
-                //    }
-                //    Random rng = new Random();//HZ declear random
-
-                //    players = remainCheck(players);//HZ check the number of remain player
-                //    currentPlayer = 0; //HZ reset the currentPlayer, keep the current players inside of the number of players range
-                //    numberOfPlayers = players.Count;// HZ set number of players equal current player list
-
-                //    for (int i = 0; i < players.Count - 1; i++)//HZ random the rest of players' slots
-                //    {
-                //        Player tmp = players[i];
-                //        int swapindex = rng.Next(players.Count);
-                //        players[i] = players[swapindex];
-                //        players[swapindex] = tmp;
-                //    }
-
-
-
-                //    if (players.Count > 0)//HZ if number of players greater than 0, start new round
-                //    {
-                //        deck = new Deck();//HZ 
-                //        deck.Shuffle();//HZ
-                //        //nextTask = Task.PlayerTurn;//HZ
-                //    }
-                //    else
-                //    {
-                //        //nextTask = Task.GameOver;//HZ
-                //        //Console.Write("Press <Enter> to exit... ");
-                //        while (Console.ReadKey().Key != ConsoleKey.Enter) { }
-                //    }
-                //}
-                //else//hz
-                //{
-                //    currentPlayer = 0;
-                //    //nextTask = Task.PlayerTurn;
-                //}
-            }
-            else
-            {
-                //currentPlayer++;
-                //if (currentPlayer > players.Count - 1)
-                //{
-                //    currentPlayer = 0; // back to the first player...
-                //}
-                return null;
-                //nextTask = Task.PlayerTurn;
+                numberOfPlayers--;
+                playerNotContinue.Add(playerIndex);
             }
         }
 
-    
+        public bool CheckGameContinue()
+        {
+            if (numberOfPlayers == 0)
+            {
+                return false;
+            }
+            else if (numberOfPlayers == 1)
+            {
+                return false;
+            }
+            else
+            {
+                
+                if (playerNotContinue != null)
+                {
+                    foreach (int playerIndex in playerNotContinue)
+                    {
+                        players.Remove(players[playerIndex]);
+                    }
+                }
+                deck = new Deck();
+                deck.Shuffle();
+                currentPlayer = 0;
+                Player tempwinner = null;
+                int indextmp = 0;
+                playerNotContinue = null;
+                for(int i=0; i<players.Count;i++)
+                {
+                    if(players[i].status == PlayerStatus.win)
+                    {
+                        tempwinner = players[i];
+                        indextmp = i;
+                    }
+                }
+                if (tempwinner != null)
+                {
+                    Player tmpter = players[players.Count - 1];
+                    players[players.Count - 1] = tempwinner;
+                    players[indextmp] = tmpter;
+                }
+                Random rng = new Random();
+                for (int i = 0; i < players.Count - 1; i++)
+                {
+                    Player tmp = players[i];
+                    int swapindex = rng.Next(players.Count - 1);
+                    players[i] = players[swapindex];
+                    players[swapindex] = tmp;
+                }
+                for (int i=0; i<players.Count;i++)
+                {
+                    players[i].setStatus(PlayerStatus.active);
+                    players[i].setScore(0);
+                    players[i].cards = new List<Card>();
+                }
+                //Console.WriteLine("Done.");
+                //Console.WriteLine("================================");
+                //cardTable.ShowPlayers(players);
+                //nextTask = Task.PlayerTurn;
+                return true;
+            }
+        }
+
+
+
 
         /* Figures out what task to do next in game
          * as represented by field nextTask

@@ -148,12 +148,27 @@ td {
         margin: 0 auto;
     }
 
-.PlayerChoose, .playerTurn {
+.PlayerChoose, .playerTurn, .askingbar, .endOptions {
     text-align: center;
 }
 
 .table-container {
     display: flex;
     justify-content: center;
+}
+
+.askingbar {
+    color: #1274dc;
+}
+
+.endgame, .winner {
+    text-align: center;
+    color: red;
+    font-size: 40px;
+}
+
+.endask {
+    text-align: center;
+    border: 1px solid #9a9a9a;
 }
 

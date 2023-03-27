@@ -91,7 +91,7 @@ using RaceTo21Blazor.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 132 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
+#line 154 "/Users/zhanghanjia/Desktop/C# /RanceTo21BlazorVersion/RaceTo21Blazor/RaceTo21Blazor/Pages/Index.razor"
       
 
 
@@ -100,6 +100,7 @@ using RaceTo21Blazor.Shared;
         Welcome,
         UserInfo,
         MainGame,
+        ContinueCheck,
         EndScene
     }
 
@@ -115,6 +116,7 @@ using RaceTo21Blazor.Shared;
     private bool firstClick = true;
     private bool RoundEnd = false;
     private string winner = null;
+    private List<bool> playerContinueCheck = new List<bool>();
 
     private void NumberofPlayer(ChangeEventArgs e)
     {
@@ -203,7 +205,7 @@ using RaceTo21Blazor.Shared;
         {
             return "Stay";
         }
-        else if(status == PlayerStatus.bust)
+        else if (status == PlayerStatus.bust)
         {
             return "Bust";
         }
@@ -234,6 +236,49 @@ using RaceTo21Blazor.Shared;
     private string CheckForEnd()
     {
         return game.checkForEnd();
+    }
+
+    private void ToContinuePage()
+    {
+        page = Page.ContinueCheck;
+        for (int i = 0; i < playerNumber; i++)
+        {
+            playerContinueCheck.Add(true);
+        }
+    }
+
+    private void ContinueCheck(int playerIndex, bool c)
+    {
+        playerContinueCheck[playerIndex] = c;
+    }
+
+    private void EndCheck()
+    {
+        int notContinueNumber = 0;
+        for (int i = 0; i < playerNumber; i++)
+        {
+            game.PlayerContinue(i, playerContinueCheck[i]);
+            if (playerContinueCheck[i] == false)
+            {
+                notContinueNumber++;
+            }
+        }
+        bool check = game.CheckGameContinue();
+        if (check)
+        {
+            chooseCards = 0;
+            CurrentPlayerIndex = 0;
+            firstClick = true;
+            RoundEnd = false;
+            winner = null;
+            playerContinueCheck = new List<bool>();
+            playerNumber -= notContinueNumber;
+            page = Page.MainGame;
+        }
+        else
+        {
+            page = Page.EndScene;
+        }
     }
 
 #line default
